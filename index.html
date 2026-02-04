@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Riwaq Digital</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;background:#020617;color:#fff;font-family:Arial}
+header{padding:40px;text-align:center;background:#020617}
+header h1{color:#22c55e;font-size:32px}
+header p{color:#94a3b8}
+.container{max-width:900px;margin:auto;padding:20px}
+.product{background:#020617;border:1px solid #1f2937;padding:15px;border-radius:14px;margin:15px 0}
+button{background:#22c55e;color:#000;border:none;padding:12px 16px;border-radius:10px;font-weight:bold;cursor:pointer}
+.admin{background:#020617;border:1px dashed #334155;padding:15px;border-radius:14px;margin-top:40px}
+input{width:100%;padding:10px;border-radius:10px;border:none;margin:6px 0}
+.hidden{display:none}
+hr{border:0;border-top:1px solid #1f2937;margin:25px 0}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Riwaq Digital</h1>
+<p>متجر المنتجات الرقمية – تسليم فوري</p>
+</header>
+
+<div class="container">
+
+<h2>🛒 المنتجات</h2>
+<div id="products"></div>
+
+<hr>
+
+<h3 onclick="showAdmin()" style="cursor:pointer;color:#38bdf8">
+🔐 لوحة التحكم
+</h3>
+
+<div id="admin" class="admin hidden">
+<input type="password" id="pass" placeholder="كلمة المرور">
+<button onclick="login()">دخول</button>
+
+<div id="panel" class="hidden">
+<h3>➕ إضافة منتج</h3>
+<input id="name" placeholder="اسم المنتج">
+<input id="price" placeholder="السعر">
+<input id="file" placeholder="رابط ملف التحميل">
+<button onclick="addProduct()">إضافة</button>
+
+<h3>📦 إدارة المنتجات</h3>
+<div id="adminList"></div>
+</div>
+</div>
+
+</div>
+
+<script>
+const PASSWORD = "1234";
+
+function showAdmin(){
+  document.getElementById("admin").classList.toggle("hidden");
+}
+
+function login(){
+  if(pass.value === PASSWORD){
+    panel.classList.remove("hidden");
+  }else alert("كلمة المرور خاطئة");
+}
+
+function getProducts(){
+  return JSON.parse(localStorage.getItem("products") || "[]");
+}
+
+function saveProducts(p){
+  localStorage.setItem("products", JSON.stringify(p));
+  render();
+}
+
+function addProduct(){
+  const p = getProducts();
+  p.push({
+    name:name.value,
+    price:price.value,
+    file:file.value
+  });
+  saveProducts(p);
+  name.value="";price.value="";file.value="";
+}
+
+function deleteProduct(i){
+  const p = getProducts();
+  p.splice(i,1);
+  saveProducts(p);
+}
+
+function buy(file){
+  alert("تم الدفع بنجاح ✅ سيتم تحميل المنتج");
+  window.location.href = file;
+}
+
+function render(){
+  const box = document.getElementById("products");
+  const adminBox = document.getElementById("adminList");
+  box.innerHTML="";
+  adminBox.innerHTML="";
+
+  getProducts().forEach((p,i)=>{
+    box.innerHTML += `
+      <div class="product">
+        <h3>${p.name}</h3>
+        <p>💰 السعر: ${p.price}$</p>
+        <button onclick="buy('${p.file}')">شراء</button>
+      </div>
+    `;
+
+    adminBox.innerHTML += `
+      <div class="product">
+        <b>${p.name}</b><br>
+        ${p.price}$<br>
+        <button onclick="deleteProduct(${i})">حذف</button>
+      </div>
+    `;
+  });
+}
+
+render();
+</script>
+
+</body>
+</html>
